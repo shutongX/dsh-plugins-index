@@ -67,8 +67,25 @@ const PLUGINS = [
   },
 ];
 
+function latestTag(dir) {
+  try {
+    const tags = execFileSync('git', ['-C', dir, 'tag', '--list', 'v*', '--sort=-v:refname'], { encoding: 'utf8' })
+      .split('\n').map((line) => line.trim()).filter(Boolean);
+    return tags[0];
+  } catch {
+    return undefined;
+  }
+}
+
 function localPackage(repo) {
   const dir = resolve(ROOT, '..', repo);
+  const tag = latestTag(dir);
+  if (tag !== undefined) {
+    const manifest = JSON.parse(execFileSync('git', ['-C', dir, 'show', tag + ':package.json'], { encoding: 'utf8' }));
+    const commit = execFileSync('git', ['-C', dir, 'rev-list', '-n', '1', tag], { encoding: 'utf8' }).trim();
+    const time = Number(execFileSync('git', ['-C', dir, 'log', '-1', '--format=%ct', tag], { encoding: 'utf8' }).trim());
+    return { manifest, commit, time, iconFile: join(dir, 'icon.svg') };
+  }
   const manifest = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
   const commit = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
   const time = Number(execFileSync('git', ['-C', dir, 'log', '-1', '--format=%ct'], { encoding: 'utf8' }).trim());
@@ -78,16 +95,29 @@ function localPackage(repo) {
 async function remotePackage(repo) {
   const headers = { accept: 'application/vnd.github+json', 'user-agent': 'dsh-plugins-index' };
   if (process.env.GITHUB_TOKEN) headers.authorization = 'Bearer ' + process.env.GITHUB_TOKEN;
-  const commitResponse = await fetch('https://api.github.com/repos/' + OWNER + '/' + repo + '/commits/main', { headers });
-  if (!commitResponse.ok) throw new Error(repo + ': commits/main HTTP ' + commitResponse.status);
-  const commitJson = await commitResponse.json();
-  const manifestResponse = await fetch('https://raw.githubusercontent.com/' + OWNER + '/' + repo + '/main/package.json', { headers });
-  if (!manifestResponse.ok) throw new Error(repo + ': package.json HTTP ' + manifestResponse.status);
-  return {
-    manifest: await manifestResponse.json(),
-    commit: commitJson.sha,
-    time: Math.floor(Date.parse(commitJson.commit.committer.date) / 1000),
-  };
+  const base = 'https://api.github.com/repos/' + OWNER + '/' + repo;
+  let ref = 'main';
+  let commit;
+  let time;
+  const releaseResponse = await fetch(base + '/releases/latest', { headers });
+  if (releaseResponse.ok) {
+    const release = await releaseResponse.json();
+    ref = release.tag_name;
+    const tagCommit = await fetch(base + '/commits/' + ref, { headers });
+    if (!tagCommit.ok) throw new Error(repo + ': commits/' + ref + ' HTTP ' + tagCommit.status);
+    const tagJson = await tagCommit.json();
+    commit = tagJson.sha;
+    time = Math.floor(Date.parse(tagJson.commit.committer.date) / 1000);
+  } else {
+    const commitResponse = await fetch(base + '/commits/main', { headers });
+    if (!commitResponse.ok) throw new Error(repo + ': commits/main HTTP ' + commitResponse.status);
+    const commitJson = await commitResponse.json();
+    commit = commitJson.sha;
+    time = Math.floor(Date.parse(commitJson.commit.committer.date) / 1000);
+  }
+  const manifestResponse = await fetch('https://raw.githubusercontent.com/' + OWNER + '/' + repo + '/' + ref + '/package.json', { headers });
+  if (!manifestResponse.ok) throw new Error(repo + ': package.json@' + ref + ' HTTP ' + manifestResponse.status);
+  return { manifest: await manifestResponse.json(), commit, time };
 }
 
 const plugins = [];
