@@ -1,9 +1,8 @@
 /**
  * Build index.json for the shutongX DSH plugin market.
  *
- * Local mode (default) reads sibling plugin repos from disk and pins their HEAD.
- * Remote mode (--remote) is for CI: it reads each public repo's default branch
- * commit and package.json from GitHub.
+ * Both modes pin the highest SemVer release tag. Local mode reads sibling plugin
+ * repos from disk; remote mode is for CI and reads published releases from GitHub.
  *
  * Usage:
  *   node scripts/build-index.mjs               # print the index, no write
@@ -91,7 +90,9 @@ async function remotePackage(repo) {
   const base = 'https://api.github.com/repos/' + OWNER + '/' + repo;
   const releaseResponse = await fetch(base + '/releases?per_page=100', { headers });
   if (!releaseResponse.ok) throw new Error(repo + ': releases HTTP ' + releaseResponse.status);
-  const releases = (await releaseResponse.json()).map((release) => release.tag_name);
+  const releases = (await releaseResponse.json())
+    .filter((release) => release.draft !== true && release.prerelease !== true)
+    .map((release) => release.tag_name);
   const ref = pickLatestTag(releases);
   const tagCommit = await fetch(base + '/commits/' + ref, { headers });
   if (!tagCommit.ok) throw new Error(repo + ': commits/' + ref + ' HTTP ' + tagCommit.status);

@@ -36,9 +36,9 @@ dsh plugin --profile desktop add https://github.com/shutongX/dsh-session-message
 
 ## 维护
 
-- `scripts/build-index.mjs`：本地读同级插件目录，取 `git rev-parse HEAD` 和 commit 时间，生成 `index.json` 与图标；`--remote` 从 GitHub API 读取，供 CI 用。
+- `scripts/build-index.mjs`：本地读同级插件目录，选最高的 SemVer release tag，生成 `index.json` 与图标；`--remote` 从 GitHub Releases 读取同一条规则，供 CI 用。
 - 每次插件发版后运行 `npm run build`，提交 `index.json`。
-- GitHub Actions 每天也会自动刷新一次（只更新 commit 和图标，不自动改版本号）。
+- GitHub Actions 每天也会自动刷新一次（版本、commit、图标一起更新；没有 release 的仓库会直接报错，不会退回 main 的未发布提交）。
 - 索引格式由 `@deepseek-ai/dsh-plugin-market-index` 校验；npm 装好后脚本会自动校验。
 
 ## License
