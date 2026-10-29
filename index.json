@@ -118,12 +118,12 @@
       },
       "versions": [
         {
-          "version": "0.1.1",
-          "publishTimestamp": 1793256564,
+          "version": "0.1.2",
+          "publishTimestamp": 1793257298,
           "source": {
             "type": "git",
             "url": "https://github.com/shutongX/dsh-pocket-switch",
-            "commit": "aac93df715f6dde858b2635eea3a52401ece6d41"
+            "commit": "0fba4709cc2ebc947d9ce012fc4585b0d4687c57"
           },
           "engines": {
             "dsh": ">=0.2.1-rc.1 <3"
@@ -164,12 +164,12 @@
       },
       "versions": [
         {
-          "version": "0.1.0",
-          "publishTimestamp": 1793255131,
+          "version": "0.1.1",
+          "publishTimestamp": 1793257303,
           "source": {
             "type": "git",
             "url": "https://github.com/shutongX/dsh-config-migrator",
-            "commit": "d86d33dcbddf1d1c869db211d5da20f60e40df32"
+            "commit": "9425922109260f4ff7f73d1b2c0b089217f10e57"
           },
           "engines": {
             "dsh": ">=0.2.1-rc.1 <3"
