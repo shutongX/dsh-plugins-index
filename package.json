@@ -1,0 +1,15 @@
+{
+  "name": "dsh-plugins-index",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DSH plugin market index for shutongX plugins.",
+  "scripts": {
+    "build": "node scripts/build-index.mjs --write",
+    "build:remote": "node scripts/build-index.mjs --remote --write",
+    "test": "node scripts/build-index.mjs"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-plugin-market-index": "^0.2.1-alpha.4"
+  }
+}

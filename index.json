@@ -1,0 +1,227 @@
+{
+  "format": 1,
+  "title": {
+    "en": "shutongX DSH plugins",
+    "zh": "shutongX 的 DSH 插件"
+  },
+  "description": {
+    "en": "Community plugins for DeepSeek Harness by shutongX: cross-session messaging, pocket switching, configuration migration and performance profiling.",
+    "zh": "shutongX 的 DeepSeek Harness 插件：跨会话消息、换电脑、配置迁移、性能套件。"
+  },
+  "metadata": {
+    "categories": {
+      "tools": {
+        "title": {
+          "en": "Tools",
+          "zh": "实用工具"
+        }
+      },
+      "dev": {
+        "title": {
+          "en": "Developer Tools",
+          "zh": "开发者工具"
+        }
+      },
+      "remote": {
+        "title": {
+          "en": "Remote Access",
+          "zh": "远程访问"
+        }
+      }
+    },
+    "labels": {
+      "git": {
+        "title": {
+          "en": "Git bundle",
+          "zh": "Git 源码包"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-session-message",
+      "title": {
+        "en": "Session Messaging",
+        "zh": "跨会话消息"
+      },
+      "description": {
+        "en": "Send a user-role message to another DSH session in any workspace, and let it reply.",
+        "zh": "给任意工作区的另一个会话发一条 user 消息；对方可以再回给你。"
+      },
+      "icon": "icons/dsh-session-message.svg",
+      "author": "shutongX",
+      "homepage": "https://github.com/shutongX/dsh-session-message#readme",
+      "repository": {
+        "url": "https://github.com/shutongX/dsh-session-message"
+      },
+      "metadata": {
+        "category": "tools",
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "session",
+          "messaging",
+          "multi-agent",
+          "cordis"
+        ],
+        "labels": [
+          "git"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1793255130,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/shutongX/dsh-session-message",
+            "commit": "20f08ab493a27d6d9f0fdc6d2515fed3be9ad8ca"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.1 <3"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dsh-pocket-switch",
+      "title": {
+        "en": "Pocket Switch",
+        "zh": "换电脑"
+      },
+      "description": {
+        "en": "Switch between DSH hosts from your phone: addresses and access pins stored once, automatic login.",
+        "zh": "在多台电脑的 DSH（dsh-pocket 手机访问）之间一键切换：保存地址与密码、自动登录。"
+      },
+      "icon": "icons/dsh-pocket-switch.svg",
+      "author": "shutongX",
+      "homepage": "https://github.com/shutongX/dsh-pocket-switch#readme",
+      "repository": {
+        "url": "https://github.com/shutongX/dsh-pocket-switch"
+      },
+      "metadata": {
+        "category": "remote",
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "dsh-pocket",
+          "remote",
+          "mobile",
+          "cordis"
+        ],
+        "labels": [
+          "git"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1793255130,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/shutongX/dsh-pocket-switch",
+            "commit": "9d4c4110cc677f07ba2694a1e3750aa9cb55e786"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.1 <3"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dsh-config-migrator",
+      "title": {
+        "en": "Config Migrator",
+        "zh": "配置迁移"
+      },
+      "description": {
+        "en": "Export selected DSH configuration sections as a zip and restore them on a new machine with a conflict preview.",
+        "zh": "把本机 DSH 的分区配置导出为 zip，在新机器上按需导入并先分析冲突。"
+      },
+      "icon": "icons/dsh-config-migrator.svg",
+      "author": "shutongX",
+      "homepage": "https://github.com/shutongX/dsh-config-migrator#readme",
+      "repository": {
+        "url": "https://github.com/shutongX/dsh-config-migrator"
+      },
+      "metadata": {
+        "category": "dev",
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "configuration",
+          "backup",
+          "migration",
+          "cordis"
+        ],
+        "labels": [
+          "git"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1793255131,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/shutongX/dsh-config-migrator",
+            "commit": "d86d33dcbddf1d1c869db211d5da20f60e40df32"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.1 <3"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dsh-perf",
+      "title": {
+        "en": "Performance Suite",
+        "zh": "性能套件"
+      },
+      "description": {
+        "en": "Measure per-plugin client cost, compare runs, and generate agent-readable optimization reports.",
+        "zh": "按插件采集耗时、保存对比记录、生成给 agent 读的优化报告。"
+      },
+      "icon": "icons/dsh-perf.svg",
+      "author": "shutongX",
+      "homepage": "https://github.com/shutongX/dsh-perf#readme",
+      "repository": {
+        "url": "https://github.com/shutongX/dsh-perf"
+      },
+      "metadata": {
+        "category": "dev",
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "performance",
+          "profiling",
+          "optimization",
+          "cordis"
+        ],
+        "labels": [
+          "git"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1793255132,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/shutongX/dsh-perf",
+            "commit": "91d0a6bf130bae1d92a64635a3a8927a0656b645"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.1 <3"
+          }
+        }
+      ]
+    }
+  ]
+}
