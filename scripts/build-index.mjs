@@ -11,9 +11,10 @@
  *   node scripts/build-index.mjs --remote --write
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { rcompare, valid } from 'semver';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const REMOTE = process.argv.includes('--remote');
@@ -67,28 +68,20 @@ const PLUGINS = [
   },
 ];
 
-function latestTag(dir) {
-  try {
-    const tags = execFileSync('git', ['-C', dir, 'tag', '--list', 'v*', '--sort=-v:refname'], { encoding: 'utf8' })
-      .split('\n').map((line) => line.trim()).filter(Boolean);
-    return tags[0];
-  } catch {
-    return undefined;
-  }
+function pickLatestTag(tags) {
+  const stable = tags.map((tag) => tag.replace(/^v/, '')).filter((tag) => valid(tag) !== null);
+  if (stable.length === 0) throw new Error('no SemVer release tag found');
+  return 'v' + stable.sort(rcompare)[0];
 }
 
 function localPackage(repo) {
   const dir = resolve(ROOT, '..', repo);
-  const tag = latestTag(dir);
-  if (tag !== undefined) {
-    const manifest = JSON.parse(execFileSync('git', ['-C', dir, 'show', tag + ':package.json'], { encoding: 'utf8' }));
-    const commit = execFileSync('git', ['-C', dir, 'rev-list', '-n', '1', tag], { encoding: 'utf8' }).trim();
-    const time = Number(execFileSync('git', ['-C', dir, 'log', '-1', '--format=%ct', tag], { encoding: 'utf8' }).trim());
-    return { manifest, commit, time, iconFile: join(dir, 'icon.svg') };
-  }
-  const manifest = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
-  const commit = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-  const time = Number(execFileSync('git', ['-C', dir, 'log', '-1', '--format=%ct'], { encoding: 'utf8' }).trim());
+  const tags = execFileSync('git', ['-C', dir, 'tag', '--list', 'v*'], { encoding: 'utf8' })
+    .split('\n').map((line) => line.trim()).filter(Boolean);
+  const tag = pickLatestTag(tags);
+  const manifest = JSON.parse(execFileSync('git', ['-C', dir, 'show', tag + ':package.json'], { encoding: 'utf8' }));
+  const commit = execFileSync('git', ['-C', dir, 'rev-list', '-n', '1', tag], { encoding: 'utf8' }).trim();
+  const time = Number(execFileSync('git', ['-C', dir, 'log', '-1', '--format=%ct', tag], { encoding: 'utf8' }).trim());
   return { manifest, commit, time, iconFile: join(dir, 'icon.svg') };
 }
 
@@ -96,28 +89,20 @@ async function remotePackage(repo) {
   const headers = { accept: 'application/vnd.github+json', 'user-agent': 'dsh-plugins-index' };
   if (process.env.GITHUB_TOKEN) headers.authorization = 'Bearer ' + process.env.GITHUB_TOKEN;
   const base = 'https://api.github.com/repos/' + OWNER + '/' + repo;
-  let ref = 'main';
-  let commit;
-  let time;
-  const releaseResponse = await fetch(base + '/releases/latest', { headers });
-  if (releaseResponse.ok) {
-    const release = await releaseResponse.json();
-    ref = release.tag_name;
-    const tagCommit = await fetch(base + '/commits/' + ref, { headers });
-    if (!tagCommit.ok) throw new Error(repo + ': commits/' + ref + ' HTTP ' + tagCommit.status);
-    const tagJson = await tagCommit.json();
-    commit = tagJson.sha;
-    time = Math.floor(Date.parse(tagJson.commit.committer.date) / 1000);
-  } else {
-    const commitResponse = await fetch(base + '/commits/main', { headers });
-    if (!commitResponse.ok) throw new Error(repo + ': commits/main HTTP ' + commitResponse.status);
-    const commitJson = await commitResponse.json();
-    commit = commitJson.sha;
-    time = Math.floor(Date.parse(commitJson.commit.committer.date) / 1000);
-  }
+  const releaseResponse = await fetch(base + '/releases?per_page=100', { headers });
+  if (!releaseResponse.ok) throw new Error(repo + ': releases HTTP ' + releaseResponse.status);
+  const releases = (await releaseResponse.json()).map((release) => release.tag_name);
+  const ref = pickLatestTag(releases);
+  const tagCommit = await fetch(base + '/commits/' + ref, { headers });
+  if (!tagCommit.ok) throw new Error(repo + ': commits/' + ref + ' HTTP ' + tagCommit.status);
+  const tagJson = await tagCommit.json();
+  const commit = tagJson.sha;
+  const time = Math.floor(Date.parse(tagJson.commit.committer.date) / 1000);
   const manifestResponse = await fetch('https://raw.githubusercontent.com/' + OWNER + '/' + repo + '/' + ref + '/package.json', { headers });
   if (!manifestResponse.ok) throw new Error(repo + ': package.json@' + ref + ' HTTP ' + manifestResponse.status);
-  return { manifest: await manifestResponse.json(), commit, time };
+  const iconResponse = await fetch('https://raw.githubusercontent.com/' + OWNER + '/' + repo + '/' + ref + '/icon.svg', { headers });
+  if (!iconResponse.ok) throw new Error(repo + ': icon.svg@' + ref + ' HTTP ' + iconResponse.status);
+  return { manifest: await manifestResponse.json(), commit, time, icon: Buffer.from(await iconResponse.arrayBuffer()) };
 }
 
 const plugins = [];
@@ -147,9 +132,9 @@ for (const spec of PLUGINS) {
       engines: { dsh: manifest.engines?.dsh ?? ENGINE },
     }],
   });
-  if (WRITE && !REMOTE) {
+  if (WRITE) {
     mkdirSync(join(ROOT, 'icons'), { recursive: true });
-    writeFileSync(join(ROOT, 'icons', spec.repo + '.svg'), readFileSync(loaded.iconFile));
+    writeFileSync(join(ROOT, 'icons', spec.repo + '.svg'), REMOTE ? loaded.icon : readFileSync(loaded.iconFile));
   }
 }
 
