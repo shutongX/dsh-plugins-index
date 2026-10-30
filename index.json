@@ -210,12 +210,12 @@
       },
       "versions": [
         {
-          "version": "0.1.1",
-          "publishTimestamp": 1793256579,
+          "version": "0.1.2",
+          "publishTimestamp": 1793277444,
           "source": {
             "type": "git",
             "url": "https://github.com/shutongX/dsh-perf",
-            "commit": "45ca7ce4d4fac678c28f0b94ca9bf65bf9f8aa10"
+            "commit": "842ef15474c9530aeeb405beb187ebf36120c598"
           },
           "engines": {
             "dsh": ">=0.2.1-rc.1 <3"
