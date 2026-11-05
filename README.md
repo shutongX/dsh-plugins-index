@@ -23,6 +23,9 @@ https://shutongX.github.io/dsh-plugins-index/index.json
 | dsh-pocket-switch | 手机端多台 DSH 一键切换 | https://github.com/shutongX/dsh-pocket-switch |
 | dsh-config-migrator | DSH 配置打包 / 迁移 | https://github.com/shutongX/dsh-config-migrator |
 | dsh-perf | 性能采集与优化建议 | https://github.com/shutongX/dsh-perf |
+| dsh-ask-user | 简化的 ask_user 工具：一次问一个问题 | https://github.com/shutongX/dsh-ask-user |
+| dsh-chat-find | 会话内查找：高亮全部命中并跳转 | https://github.com/shutongX/dsh-chat-find |
+| dsh-live-speed | 输入框下方显示本轮实时输出速度 | https://github.com/shutongX/dsh-live-speed |
 
 ## 安装（不走索引）
 

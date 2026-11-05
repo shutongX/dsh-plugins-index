@@ -26,6 +26,7 @@ const CATEGORIES = {
   tools: { en: 'Tools', zh: '实用工具' },
   dev: { en: 'Developer Tools', zh: '开发者工具' },
   remote: { en: 'Remote Access', zh: '远程访问' },
+  conversation: { en: 'Conversation', zh: '对话' },
 };
 
 const PLUGINS = [
@@ -64,6 +65,33 @@ const PLUGINS = [
       zh: '按插件采集耗时、保存对比记录、生成给 agent 读的优化报告。',
     },
     category: 'dev',
+  },
+  {
+    repo: 'dsh-ask-user',
+    title: { en: 'Ask User', zh: '简化提问' },
+    description: {
+      en: 'A simplified ask_user tool: one question at a time, with options and custom input.',
+      zh: '简化的 ask_user 工具：一次问一个问题，支持选项和自定义输入。',
+    },
+    category: 'tools',
+  },
+  {
+    repo: 'dsh-chat-find',
+    title: { en: 'Chat Find', zh: '会话内查找' },
+    description: {
+      en: 'Find text in the current conversation, highlight every match, and jump between them.',
+      zh: '在当前会话里查找关键词，高亮全部命中并跳转。',
+    },
+    category: 'conversation',
+  },
+  {
+    repo: 'dsh-live-speed',
+    title: { en: 'Live Speed', zh: '实时速度' },
+    description: {
+      en: 'Live tokens-per-second readout for the current reply, next to the composer.',
+      zh: '输入框下方显示本轮实时输出速度（tok/s）。',
+    },
+    category: 'conversation',
   },
 ];
 
